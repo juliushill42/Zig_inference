@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  shard-0:
+    build: .
+    container_name: zig-inference-0
+    ports: [ "8080:8080" ]
+    environment:
+      - SHARD_RANK=0
+      - NUM_SHARDS=4
+  shard-1:
+    build: .
+    container_name: zig-inference-1
+    ports: [ "8081:8080" ]
+    environment:
+      - SHARD_RANK=1
+      - NUM_SHARDS=4
+  shard-2:
+    build: .
+    container_name: zig-inference-2
+    ports: [ "8082:8080" ]
+    environment:
+      - SHARD_RANK=2
+      - NUM_SHARDS=4
+  shard-3:
+    build: .
+    container_name: zig-inference-3
+    ports: [ "8083:8080" ]
+    environment:
+      - SHARD_RANK=3
+      - NUM_SHARDS=4
+  api-gateway:
+    image: nginx:alpine
+    ports: [ "80:80" ]
+    volumes: [ "./nginx.conf:/etc/nginx/nginx.conf" ]
+    depends_on: [ shard-0, shard-1, shard-2, shard-3 ]
